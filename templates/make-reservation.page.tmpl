@@ -1,0 +1,97 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                {{$res := index .Data "reservationData"}}
+
+                <h1>Make a Reservation</h1>
+                <p><strong>Reservation Details</strong><br>
+                    Room: {{$res.Room.RoomName}}<br>
+                    Arrival: {{index .StringMap "start_date"}}<br>
+                    Departure: {{index .StringMap "end_date"}}
+                </p>
+
+                <form action="/make-reservation" method="post" class="" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <input type="hidden" name="start_date" value="{{index .StringMap "start_date"}}">
+                    <input type="hidden" name="end_date" value="{{index .StringMap "end_date"}}">
+                    <input type="hidden" name="room_id" value="{{$res.RoomID}}">
+
+                    <div class="form-group mt-3">
+                        <label for="first_name">First Name:</label>
+                        {{with .Form.Errors.GetError "first_name"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input class="form-control {{with .Form.Errors.GetError "first_name"}} is-invalid {{end}}"
+                               id="first_name" autocomplete="off" type='text'
+                               name='first_name' value="{{$res.FirstName}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        {{with .Form.Errors.GetError "last_name"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input class="form-control {{with .Form.Errors.GetError "last_name"}} is-invalid {{end}}"
+                               id="last_name" autocomplete="off" type='text'
+                               name='last_name' value="{{$res.LastName}}" required>
+                    </div>
+{{/*                    <div class="form-group">*/}}
+{{/*                        <label for="start_date">Start Date</label>*/}}
+{{/*                        <input type="text" name="start_date" id="start_date" class="form-control">*/}}
+{{/*                    </div>*/}}
+{{/*                    <div class="form-group">*/}}
+{{/*                        <label for="end_date">End Date</label>*/}}
+{{/*                        <input type="text" name="end_date" id="end_date" class="form-control">*/}}
+{{/*                    </div>*/}}
+
+{{/*                        <input type="hidden" name="roomID" id="roomID" class="form-control" value=1>*/}}
+
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        {{with .Form.Errors.GetError "email"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input class="form-control {{with .Form.Errors.GetError "email"}} is-invalid {{end}}" id="email"
+                               autocomplete="off" type='email'
+                               name='email' value="{{$res.Email}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        {{with .Form.Errors.GetError "phone"}}
+                            <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input class="form-control {{with .Form.Errors.GetError "phone"}} is-invalid {{end}}" id="phone"
+                               autocomplete="off" type='tel'
+                               name='phone' value="{{$res.Phone}}" required pattern="[0-9]{10}">
+                        <small class="form-text text-muted">Please enter a 10-digit phone number.</small>
+                    </div>
+
+
+                    <hr>
+                    <input type="submit" class="btn btn-primary" value="Make Reservation">
+                </form>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let phoneInput = document.getElementById("phone");
+            phoneInput.addEventListener("input", function () {
+                let phoneValue = phoneInput.value.replace(/\D/g, ''); // Remove non-digit characters
+                if (phoneValue.length > 10) {
+                    phoneValue = phoneValue.slice(0, 10); // Limit to first 10 digits
+                }
+                phoneInput.value = phoneValue;
+            });
+        });
+    </script>
+
+{{end}}
